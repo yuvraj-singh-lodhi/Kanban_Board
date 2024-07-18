@@ -1,5 +1,4 @@
 import React, { useState, FormEvent } from 'react';
-import { signupUser } from '../services/api'; // Import signupUser function
 
 function SignupPage() {
   const [username, setUsername] = useState('');
@@ -16,13 +15,6 @@ function SignupPage() {
       return;
     }
 
-    try {
-      await signupUser(username, email, password); // Pass username to signupUser function
-      console.log('User signed up successfully');
-    } catch (error) {
-      console.error('Signup error:', error);
-      setError('Signup failed. Please try again.');
-    }
   };
 
   return (

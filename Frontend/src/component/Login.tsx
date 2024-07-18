@@ -1,27 +1,18 @@
 import React, { useState, FormEvent } from 'react';
-import { loginUser } from '../services/api'; // Import loginUser function
 
 interface LoginPageProps {
   onLogin: () => void;
 }
 
-function LoginPage({ onLogin }: LoginPageProps) {
+// eslint-disable-next-line no-empty-pattern
+function LoginPage({ }: LoginPageProps) {
   const [Username, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const response = await loginUser(Username, password); 
-      console.log(`User logged in with ID: ${response}`);
-
-      onLogin(); 
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Login failed. Please check your credentials.');
-    }
+   
   };
 
   return (
@@ -47,7 +38,6 @@ function LoginPage({ onLogin }: LoginPageProps) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
           className="

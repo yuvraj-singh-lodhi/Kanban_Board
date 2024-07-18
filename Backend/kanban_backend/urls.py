@@ -1,13 +1,16 @@
 # kanban_backend/urls.py
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import BoardViewSet, ColumnViewSet, TaskViewSet
-
-router = DefaultRouter()
-router.register(r'boards', BoardViewSet)
-router.register(r'columns', ColumnViewSet)
-router.register(r'tasks', TaskViewSet)
+from django.urls import path
+from .views import (
+    BoardListCreateAPIView, BoardDetailAPIView,
+    ColumnListCreateAPIView, ColumnDetailAPIView,
+    TaskListCreateAPIView, TaskDetailAPIView,
+)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('boards/', BoardListCreateAPIView.as_view(), name='board-list'),
+    path('boards/<int:pk>/', BoardDetailAPIView.as_view(), name='board-detail'),
+    path('columns/', ColumnListCreateAPIView.as_view(), name='column-list'),
+    path('columns/<int:pk>/', ColumnDetailAPIView.as_view(), name='column-detail'),
+    path('tasks/', TaskListCreateAPIView.as_view(), name='task-list'),
+    path('tasks/<int:pk>/', TaskDetailAPIView.as_view(), name='task-detail'),
 ]
