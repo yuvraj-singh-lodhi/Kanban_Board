@@ -1,60 +1,39 @@
-from rest_framework import generics
+# kanban_backend/views.py
+from rest_framework import viewsets
+from rest_framework.response import Response
 from .models import Board, Column, Task
 from .serializers import BoardSerializer, ColumnSerializer, TaskSerializer
-from django.contrib.auth.models import User
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
-from .serializers import UserSerializer
-from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth import authenticate, login
 
-class UserCreateAPIView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
-
-
-class UserLoginAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        
-        user = authenticate(username=username, password=password)
-        if user:
-            login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key, 'user_id': user.id})
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-class BoardListCreateAPIView(generics.ListCreateAPIView):
+class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-class BoardRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Board.objects.all()
-    serializer_class = BoardSerializer
-
-class ColumnListCreateAPIView(generics.ListCreateAPIView):
+class ColumnViewSet(viewsets.ModelViewSet):
     queryset = Column.objects.all()
     serializer_class = ColumnSerializer
 
-class ColumnRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Column.objects.all()
-    serializer_class = ColumnSerializer
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['position'] = Column.objects.filter(board_id=data['board']).count()
+        return super().create(request, *args, **kwargs)
 
-class TaskListCreateAPIView(generics.ListCreateAPIView):
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+        data['position'] = instance.position
+        return super().update(request, *args, **kwargs)
+
+class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-class TaskRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        data['position'] = Task.objects.filter(column_id=data['column']).count()
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+        data['position'] = instance.position
+        return super().update(request, *args, **kwargs)

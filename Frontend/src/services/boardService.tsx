@@ -1,65 +1,36 @@
-import api from './api';
-import { Board, Column, Task, Id } from '../types';
+import axios from 'axios';
+import { Column, Task } from '../types';
 
-// Board Services
-export const fetchBoards = (): Promise<{ data: Board[] }> => {
-  return api.get('boards/');
+const API_URL = 'http://localhost:8000/kanban';
+
+export const fetchColumns = async () => {
+  return await axios.get(`${API_URL}/columns/`);
 };
 
-export const fetchBoard = (boardId: Id): Promise<{ data: Board }> => {
-  return api.get(`boards/${boardId}/`);
+export const createColumn = async (column: Omit<Column, "id">) => {
+  return await axios.post(`${API_URL}/columns/`, column);
 };
 
-export const createBoard = (boardData: Omit<Board, 'id'>): Promise<{ data: Board }> => {
-  return api.post('boards/', boardData);
+export const updateColumn = async (id: number, column: { title: string; }) => {
+  return await axios.put(`${API_URL}/columns/${id}/`, column);
 };
 
-export const updateBoard = (boardId: Id, boardData: Partial<Board>): Promise<{ data: Board }> => {
-  return api.put(`boards/${boardId}/`, boardData);
+export const deleteColumn = async (id: number) => {
+  return await axios.delete(`${API_URL}/columns/${id}/`);
 };
 
-export const deleteBoard = (boardId: Id): Promise<void> => {
-  return api.delete(`boards/${boardId}/`);
+export const fetchTasks = async () => {
+  return await axios.get(`${API_URL}/tasks/`);
 };
 
-// Column Services
-export const fetchColumns = (): Promise<{ data: Column[] }> => {
-  return api.get('columns/');
+export const createTask = async (task: Omit<Task, "id">) => {
+  return await axios.post(`${API_URL}/tasks/`, task);
 };
 
-export const fetchColumn = (columnId: Id): Promise<{ data: Column }> => {
-  return api.get(`columns/${columnId}/`);
+export const updateTask = async (id: number, task: { content: string; }) => {
+  return await axios.put(`${API_URL}/tasks/${id}/`, task);
 };
 
-export const createColumn = (columnData: Omit<Column, 'id' | 'tasks'>): Promise<{ data: Column }> => {
-  return api.post('columns/', columnData);
-};
-
-export const updateColumn = (columnId: Id, columnData: Partial<Column>): Promise<{ data: Column }> => {
-  return api.put(`columns/${columnId}/`, columnData);
-};
-
-export const deleteColumn = (columnId: Id): Promise<void> => {
-  return api.delete(`columns/${columnId}/`);
-};
-
-// Task Services
-export const fetchTasks = (): Promise<{ data: Task[] }> => {
-  return api.get('tasks/');
-};
-
-export const fetchTask = (taskId: Id): Promise<{ data: Task }> => {
-  return api.get(`tasks/${taskId}/`);
-};
-
-export const createTask = (taskData: Omit<Task, 'id'>): Promise<{ data: Task }> => {
-  return api.post('tasks/', taskData);
-};
-
-export const updateTask = (taskId: Id, taskData: Partial<Task>): Promise<{ data: Task }> => {
-  return api.put(`tasks/${taskId}/`, taskData);
-};
-
-export const deleteTask = (taskId: Id): Promise<void> => {
-  return api.delete(`tasks/${taskId}/`);
+export const deleteTask = async (id: number) => {
+  return await axios.delete(`${API_URL}/tasks/${id}/`);
 };

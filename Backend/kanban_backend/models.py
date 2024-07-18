@@ -1,31 +1,37 @@
+# kanban_backend/models.py
 from django.db import models
-from django.contrib.auth.models import User  # Import Django User model
 
 class Board(models.Model):
-    name = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, default="Kanban Board")
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.name} - User: {self.user.username}'
+        return self.name
 
 class Column(models.Model):
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    position = models.IntegerField(default=0)
+    board = models.ForeignKey(Board, related_name='columns', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    position = models.PositiveIntegerField()
 
     class Meta:
         ordering = ['position']
 
     def __str__(self):
-        return f'{self.title} - Board: {self.board.name}'
+        return self.title
 
 class Task(models.Model):
-    column = models.ForeignKey(Column, on_delete=models.CASCADE)
-    content = models.TextField()
-    position = models.IntegerField(default=0)
+    column = models.ForeignKey(Column, related_name='tasks', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    position = models.PositiveIntegerField()
+    due_date = models.DateField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['position']
 
     def __str__(self):
-        return f'Task {self.id} - Column: {self.column.title}'
+        return self.title
